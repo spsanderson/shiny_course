@@ -1,98 +1,47 @@
 ---
-title: "App Name"
+title: "Sales Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
-    vertical_layout: scroll
+    orientation: columns
+    vertical_layout: fill
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+
+# Core Libraries
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+
+# Interactive Viz
+library(plotly)
+
+# Database
+library(odbc)
+library(RSQLite)
 ```
-
-<!-- Sidebar {.sidebar} -->
-<!-- ======================================================================= -->
-
-<!-- Button Inputs -->
-
-<!-- - Input 1 -->
-
-<!-- - Input 2 -->
-
-
-<!-- Page 1 -->
-<!-- ======================================================================= -->
-
-Sidebar {.sidebar}
------------------------------------------------------------------------
-
-Button Inputs
-
-- Input 1
-
-- Input 2
-
-
-Column {data-height=650 .tabset}
------------------------------------------------------------------------
-
-### Chart A-1
 
 ```{r}
+con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+#dbListTables(con)
+bikes_tbl <- tbl(con,"bikes")
+bikeshops_tbl <- tbl(con, "bikeshops")
+orderlines_tbl <- tbl(con, "orderlines")
 
+processed_data_tbl <- orderlines_tbl %>%
+    left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id")) %>%
+    left_join(bikes_tbl, by = c("product.id"="bike.id")) %>%
+    mutate(extended_price = quantity * price) %>%
+    collect() %>%
+    
+    # Do this after collect()
+    separate(col = location, into = c("cit","state"), sep = ", ") %>%
+    mutate(order.date = ymd(order.date)) %>%
+    select(order.date, order.id, order.line, state, quantity, price, extended_price)
+
+#processed_data_tbl
+
+dbDisconnect(conn = con)
 ```
-
-### Chart A-2
-
-```{r}
-
-```
-
-
-Column {data-height=350 .tabset .tabset-fade}
------------------------------------------------------------------------
-
-### Chart B
-
-```{r}
-
-```
-
-### Chart C
-
-```{r}
-
-```
-
-### Chart D
-
-```{r}
-
-```
-
-
-
-<!-- Page 2 {data-orientation=columns} -->
-<!-- ======================================================================= -->
-
-
-<!-- Column {data-height=200} -->
-<!-- ----------------------------------------------------------------------- -->
-
-<!-- ### Chart E -->
-
-<!-- ```{r} -->
-
-<!-- ``` -->
-
-<!-- Column {data-height=200} -->
-<!-- ----------------------------------------------------------------------- -->
-
-<!-- ### Chart F -->
-
-<!-- ```{r} -->
-
-<!-- ``` -->
-
-
 
