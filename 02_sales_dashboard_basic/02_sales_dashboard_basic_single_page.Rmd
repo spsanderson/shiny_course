@@ -48,3 +48,33 @@ dbDisconnect(conn = con)
 ## Column {data-width=1000}
 
 ### By State
+
+```{r}
+geo_plot_tbl <- processed_data_tbl %>%
+    group_by(state) %>%
+    summarise(total_revenue = sum(extended_price, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(label_text = str_glue("State: {state}
+                                 Revenue: {scales::dollar(total_revenue)}"))
+```
+
+```{r}
+geo_plot_tbl %>%
+    plot_geo(locationmode = 'USA-states') %>%
+    add_trace(
+        z         = ~ total_revenue, 
+        locations = ~ state, 
+        color     = ~ total_revenue,
+        colors    = "Blues",
+        text      = ~ label_text
+    ) %>%
+    layout(
+        geo = list(
+            scope = "usa",
+            projection = list(type = "albers usa"),
+            showlakes = TRUE,
+            lakecolor = toRGB("white")
+        )
+    )
+```
+
