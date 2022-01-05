@@ -45,3 +45,6 @@ processed_data_tbl <- orderlines_tbl %>%
 dbDisconnect(conn = con)
 ```
 
+## Column {data-width=1000}
+
+### By State
