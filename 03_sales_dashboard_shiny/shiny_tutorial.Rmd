@@ -1,0 +1,118 @@
+---
+title: "Shiny Tutorial"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+# Shiny
+library(flexdashboard)
+library(shiny)
+library(DT)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Database
+library(odbc)
+library(RSQLite)
+```
+
+```{r}
+# Make data
+set.seed(123)
+sales_data_tbl <- tibble(
+  date  = seq.Date(from = ymd("2018-01-01"), to = today(), length.out = 90),
+  class = sample(c("marketing", "sales", "research"), size = 90, replace = TRUE),
+  sales = runif(n = 90, min = 1, max = 100),
+  class_input = str_to_title(class)
+)
+```
+
+
+
+
+Sidebar {.sidebar}
+------------------------
+
+```{r}
+# Inputs
+checkboxGroupInput(
+  inputId = "checkbox_group",
+  label = h4("Checkbox Group"),
+  choices = unique(sales_data_tbl$class_input),
+  selected = unique(sales_data_tbl$class)
+)
+
+dateRangeInput(
+  inputId = "date_range",
+  label = h4("Date Range"),
+  start = min(sales_data_tbl$date),
+  end = max(sales_data_tbl$date),
+  min = min(sales_data_tbl$date),
+  max = max(sales_data_tbl$date)
+)
+```
+
+
+```{r}
+# Reset Button
+
+```
+
+
+
+Column {data-width=500}
+-----------------------
+
+### Section - Checkbox Output
+
+```{r}
+output$checkbox_values <- renderPrint(input$checkbox_group)
+
+textOutput(outputId = "checkbox_values")
+```
+
+### Section - Date Range
+
+```{r}
+output$date_range_values <- renderPrint(input$date_range)
+
+textOutput(outputId = "date_range_values")
+```
+
+### Section - Slider Output
+
+```{r}
+
+```
+
+
+Column {data-width=750}
+-----------------------
+
+```{r}
+# Reactive Filter
+
+```
+
+
+### Section - Reactive Output
+
+```{r}
+
+
+```
+
+
+### Section - Reactive Summary
+
+```{r}
+
+
+```
+
