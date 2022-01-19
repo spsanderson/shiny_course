@@ -56,6 +56,15 @@ dateRangeInput(
   min = min(sales_data_tbl$date),
   max = max(sales_data_tbl$date)
 )
+
+sliderInput(inputId = "slider_input", 
+            label   = h4("Slider Range"),
+            min     = 1,
+            max     = 100,
+            value   = c(40, 60),
+            step    = 5,
+            round   = TRUE,
+            pre     = "$")
 ```
 
 
@@ -88,7 +97,9 @@ textOutput(outputId = "date_range_values")
 ### Section - Slider Output
 
 ```{r}
+output$slider_values <- renderPrint(input$slider_input)
 
+textOutput(outputId = "slider_values")
 ```
 
 
