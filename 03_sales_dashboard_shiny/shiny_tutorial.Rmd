@@ -73,7 +73,9 @@ sliderInput(inputId = "slider_input",
 
 ```{r}
 # Reset Button
-
+actionButton(inputId = "reset", 
+             label   = "Reset",
+             icon   = icon("sync"))
 ```
 
 
