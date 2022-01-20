@@ -127,19 +127,32 @@ sales_data_filtered <- reactive({
 ### Section - Reactive Output
 
 ```{r}
-renderDataTable(
+output$dt_output_1 <- renderDataTable(
   expr = sales_data_filtered() %>%
     mutate(sales = scales::dollar(sales))
   , options = list(scrollY = "250px")
   )
 
+DTOutput(outputId = "dt_output_1")
 ```
 
 
 ### Section - Reactive Summary
 
 ```{r}
+output$dt_output_2 <- renderDataTable(
+  expr = {
+    
+    sales_data_filtered() %>%
+      group_by(class) %>%
+      summarise(Total_Revenue = sum(sales, na.rm = TRUE)) %>%
+      ungroup() %>%
+      mutate(Total_Revenue = scales::dollar(Total_Revenue))
 
+  }
+  , options = list(scrollY = "250px")
+)
 
+DTOutput(outputId = "dt_output_2")
 ```
 
