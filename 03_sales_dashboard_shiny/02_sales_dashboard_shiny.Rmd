@@ -4,10 +4,13 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny)
+library(shinyWidgets)
 
 # Core
 library(tidyverse)
@@ -23,7 +26,7 @@ library(RSQLite)
 
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
-
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 # dbListTables(con)
 bikes_tbl <- tbl(con, "bikes")
 bikeshops_tbl <- tbl(con, "bikeshops")
@@ -38,11 +41,30 @@ processed_data_tbl <- orderlines_tbl %>%
 processed_data_tbl <- processed_data_tbl %>%    
     mutate(order.date = ymd(order.date)) %>%
     separate(location, into = c("city", "state"), sep = ", ") %>%
-    select(order.date, order.id, order.line, state, quantity, price, extended_price)
+    separate(description, into = c("category_1","cathegory_2","frame_material"),
+            sep = " - ") %>%
+    select(order.date, order.id, order.line, state, quantity, price, extended_price,
+           category_1:frame_material)
     
 # processed_data_tbl
 
 dbDisconnect(con)
+```
+
+Column {.sidebar}
+---------------------------------------------------------------
+
+```{r}
+shinyWidgets::checkboxGroupButtons(
+  inputId = "checkbox_category_1",
+  label = h4("Bike Type"),
+  choices = unique(processed_data_tbl$category_1),
+  selected = unique(processed_data_tbl$category_1),
+  checkIcon = list(
+    yes = icon("ok", lib = "glyphicon"),
+    no = icon("remove", lib = "glyphicon")
+  )
+)
 ```
 
 
