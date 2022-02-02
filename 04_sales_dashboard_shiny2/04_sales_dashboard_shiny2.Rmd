@@ -193,35 +193,49 @@ Column {data-width=600}
 
 ### Over Time
 ```{r}
-time_unit = "month"
 
-time_plot_tbl <- processed_data_tbl %>%
-  mutate(date = floor_date(order.date, unit = time_unit)) %>%
-  group_by(date) %>%
-  summarise(total_sales = sum(extended_price, na.rm = TRUE)) %>%
-  ungroup() %>%
-  mutate(label_text = str_glue("Date: {date}
-                               Revenue: {scales::dollar(total_sales)}"))
+time_plot_tbl <- reactive({
 
-g <- time_plot_tbl %>%
-  ggplot(aes(x = date, y = total_sales)) +
-  geom_line() +
-  geom_point(aes(text = label_text), size = 0.1) +
-  geom_smooth(
-    se = FALSE, 
-    linetype = "dashed", 
-    color = "black", 
-    method = "loess", 
-    span = 0.2
-    ) +
-  theme_minimal() +
-  expand_limits(y = 0) +
-  scale_y_continuous(labels = scales::dollar_format()) +
-  labs(
-    x = "",
-    y = "Total Sales"
-  )
+  time_unit = "month"
+    
+  processed_data_tbl %>%
+    
+    filter(order.date %>% between(left  = input$date_range[1],
+                                  right = input$date_range[2])) %>%
+    
+    mutate(date = floor_date(order.date, unit = time_unit)) %>%
+    group_by(date) %>%
+    summarise(total_sales = sum(extended_price, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(label_text = str_glue("Date: {date}
+                                 Revenue: {scales::dollar(total_sales)}"))
+  
+})
 
-ggplotly(g, tooltip = "text")
+renderPlotly({
+  g <- time_plot_tbl() %>%
+    ggplot(aes(x = date, y = total_sales)) +
+    geom_line() +
+    geom_point(aes(text = label_text), size = 0.1) +
+    geom_smooth(
+      se = FALSE,
+      linetype = "dashed",
+      color = "black",
+      method = "loess",
+      span = 0.2
+      ) +
+    theme_minimal() +
+    expand_limits(y = 0) +
+    scale_y_continuous(labels = scales::dollar_format()) +
+    labs(
+      x = "",
+      y = "Total Sales"
+    )
+  
+  ggplotly(g, tooltip = "text")
+})
+
+
+
 ```
 
