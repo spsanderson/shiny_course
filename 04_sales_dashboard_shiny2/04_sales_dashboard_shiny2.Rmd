@@ -202,6 +202,8 @@ time_plot_tbl <- reactive({
     
     filter(order.date %>% between(left  = input$date_range[1],
                                   right = input$date_range[2])) %>%
+    filter(category_1 %in% input$checkbox_category_1) %>%
+    filter(category_2 %in% input$picker_category_2) %>%
     
     mutate(date = floor_date(order.date, unit = time_unit)) %>%
     group_by(date) %>%
