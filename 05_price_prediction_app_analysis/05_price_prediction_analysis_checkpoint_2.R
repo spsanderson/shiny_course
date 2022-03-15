@@ -240,11 +240,37 @@ frame_material <- "Aluminum"
 
 # 5.2 Make Prediction ----
 
+new_bike_tbl <- tibble(
+    model = bike_model,
+    category_1 = category_1,
+    category_2 = category_2,
+    frame_material = frame_material
+) %>%
+    separate_bike_model()
+
+new_bike_tbl %>%
+    predict(model_xgboost, new_data = .)
 
 # 6.0 MODULARIZE NEW BIKE PREDICTION ----
 
 # 6.1 generate_new_bike() Function ----  
 
+generate_new_bike <- function(bike_model, category_1, category_2, frame_material,
+                              .ml_model) {
+    
+    new_bike_tbl <- tibble(
+        model = bike_model,
+        category_1 = category_1,
+        category_2 = category_2,
+        frame_material = frame_material
+    ) %>%
+        separate_bike_model()
+    
+    predict(.ml_model, new_data = new_bike_tbl) %>%
+        bind_cols(new_bike_tbl) %>%
+        rename(price = .pred)
+    
+}
 
 
 # 6.2 Test ----
@@ -257,7 +283,10 @@ new_bike_tbl <- generate_new_bike(
     .ml_model = model_xgboost
 ) 
 
-new_bike_tbl
+bikes_tbl %>%
+    separate_bike_description() %>%
+    separate_bike_model() %>%
+    bind_rows(new_bike_tbl)
 
 
 
