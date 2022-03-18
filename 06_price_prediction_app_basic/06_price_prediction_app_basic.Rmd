@@ -10,27 +10,25 @@ output:
 library(flexdashboard)
 ```
 
-Column {data-width=650}
+Column {.sidebar}
 -----------------------------------------------------------------------
 
-### Chart A
+Space for inputs
 
-```{r}
-
-```
-
-Column {data-width=350}
+Column {data-width="650"}
 -----------------------------------------------------------------------
 
-### Chart B
+### Price Prediction vs Product Portfolio
 
 ```{r}
 
 ```
 
-### Chart C
+Column {data-width="350"}
+-----------------------------------------------------------------------
+
+### Price Prediction Used These Features
 
 ```{r}
 
 ```
-
