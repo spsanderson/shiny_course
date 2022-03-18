@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Price Prediction App"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
