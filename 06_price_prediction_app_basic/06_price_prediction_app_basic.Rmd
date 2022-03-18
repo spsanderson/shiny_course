@@ -44,8 +44,6 @@ Space for inputs
 Column {data-width="650"}
 -----------------------------------------------------------------------
 
-### Price Prediction vs Product Portfolio
-
 ```{r}
 new_bike_tbl <- generate_new_bike(
     bike_model = "Jekyll Al 1 Black Inc.",
@@ -56,11 +54,19 @@ new_bike_tbl <- generate_new_bike(
 )
 ```
 
+### Price Prediction vs Product Portfolio
+
+```{r}
+bind_bike_prediction(bikes_tbl, new_bike_tbl) %>%
+    plot_bike_prediction()
+```
+
 Column {data-width="350"}
 -----------------------------------------------------------------------
 
 ### Price Prediction Used These Features
 
 ```{r}
-
+new_bike_tbl %>%
+    format_table()
 ```
