@@ -7,7 +7,33 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
+# Libraries
+
+# App
 library(flexdashboard)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+library(plotly)
+
+# Database
+library(odbc)
+library(RSQLite)
+
+# Data
+con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+bikes_tbl <- tbl(src = con, "bikes") %>% collect()
+dbDisconnect(conn = con)
+
+# Scripts
+source("../00_scripts/02_process_data.R")
+source("../00_scripts/03_make_predictions.R")
+
+# Model
+library(parsnip)
+model_xgboost <- read_rds("../00_models/model_xgboost.rds")
 ```
 
 Column {.sidebar}
@@ -21,7 +47,13 @@ Column {data-width="650"}
 ### Price Prediction vs Product Portfolio
 
 ```{r}
-
+new_bike_tbl <- generate_new_bike(
+    bike_model = "Jekyll Al 1 Black Inc.",
+    category_1 = "Mountain",
+    category_2 = "Over Mountain",
+    frame_material = "Aluminum",
+    .ml_model = model_xgboost
+)
 ```
 
 Column {data-width="350"}
